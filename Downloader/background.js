@@ -1,24 +1,17 @@
-const downloadSettingsp = loadStoredDownloadSettings();
+const downloadSettings = {};
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
-    let downloadSettings = {};
     let downloadSetting = {};
-    downloadSettingsp.then((d)=>{
-        Object.assign(downloadSettings, d);
-    });
+
+    console.log(`Downloading file: ${downloadItem.filename}`);
+    console.log(`Download settings: ${downloadSettings}`);
 
     // temp WA for not finnished work.
-    if (Array.isArray(downloadSettings)) {
-        downloadSetting = downloadSettings[0];
-    } else {
-        downloadSetting = downloadSettings;
-    }
+    downloadSetting = downloadSettings[0];
     
     console.log('Page address pattern is ' + downloadSetting.PageAddress);
     console.log('Save subdirectory is ' + downloadSetting.DownloadSubDirectory);
     console.log('Save directory regexp is ' + downloadSetting.SaveDirRegexp);
-
-    console.log(`Downloading file: ${downloadItem.filename}`);
 
     getCurrentTabUrl().then((url) => {
         console.log(`Tab url: "${url}"`);
@@ -56,14 +49,12 @@ async function getCurrentTabUrl() {
 }
 
 async function loadStoredDownloadSettings() {
-    let opt = {};
-
     await getLocalStorageValue("downloadSettings").then((options) => {
-        Object.assign(opt, options.downloadSettings);
+        Object.assign(downloadSettings, options.downloadSettings);
+        console.log(`Download settings loaded.`);
     });
 
-    console.log(opt);
-    return opt
+    console.log(downloadSettings);
 }
 
 async function getLocalStorageValue(key) {
@@ -78,3 +69,5 @@ async function getLocalStorageValue(key) {
         }
     });
 }
+
+loadStoredDownloadSettings();
