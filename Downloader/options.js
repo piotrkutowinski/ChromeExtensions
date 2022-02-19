@@ -55,15 +55,15 @@ function handleRemoveButtonClick(evt) {
     console.log(`Remove button click: ${evt.currentTarget.id}`);
     console.log(`Remove button click: ${evt.currentTarget.uniqueId}`);
 
-    let optionsDiv = document.getElementById(`DonwloadEntriesDiv`);
+    let optionsDiv = document.getElementById(`DownloadEntriesDiv`);
     let optionDiv = document.getElementById(`optionDiv${evt.currentTarget.uniqueId}}`);
     optionsDiv.removeChild(optionDiv);
 }
 
 async function drawOptions(options) {
-    let masterDiv = document.getElementById("DonwloadEntriesDiv");
 
     let now = Date.now();
+    let masterDiv = document.getElementById("DownloadEntriesDiv");
 
     let downloadEntriesDiv = document.createElement(`div`);
     downloadEntriesDiv.id = `optionDiv${now}`;
