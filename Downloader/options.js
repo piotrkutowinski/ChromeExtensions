@@ -40,7 +40,9 @@ function handleSaveButtonClick() {
         }
     }
 
-    chrome.storage.sync.set({ "downloadSettings": downloadEntries });
+    if (downloadEntries.length > 0) {
+        chrome.storage.sync.set({ "downloadSettings": downloadEntries });
+    }
 }
 
 function handleAddButtonClick() {
