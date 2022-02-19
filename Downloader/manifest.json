@@ -1,0 +1,14 @@
+{
+    "name": "TidyDownloader",
+    "description": "Allows to customize download directory per page",
+    "version": "1.0",
+    "manifest_version": 3,
+    
+    "background": {
+        "service_worker" : "background.js"
+    },
+
+    "permissions": ["downloads", "tabs", "storage"],
+
+    "options_page": "options.html"
+  }
