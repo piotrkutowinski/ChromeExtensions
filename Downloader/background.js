@@ -2,32 +2,40 @@ const downloadSettingsp = loadStoredDownloadSettings();
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     let downloadSettings = {};
+    let downloadSetting = {};
     downloadSettingsp.then((d)=>{
         Object.assign(downloadSettings, d);
     });
+
+    // temp WA for not finnished work.
+    if (Array.isArray(downloadSettings)) {
+        downloadSetting = downloadSettings[0];
+    } else {
+        downloadSetting = downloadSettings;
+    }
     
-    console.log('Page address pattern is ' + downloadSettings.PageAddress);
-    console.log('Save subdirectory is ' + downloadSettings.DownloadSubDirectory);
-    console.log('Save directory regexp is ' + downloadSettings.SaveDirRegexp);
+    console.log('Page address pattern is ' + downloadSetting.PageAddress);
+    console.log('Save subdirectory is ' + downloadSetting.DownloadSubDirectory);
+    console.log('Save directory regexp is ' + downloadSetting.SaveDirRegexp);
 
     console.log(`Downloading file: ${downloadItem.filename}`);
 
     getCurrentTabUrl().then((url) => {
         console.log(`Tab url: "${url}"`);
 
-        if (url.includes(downloadSettings.PageAddress)) {
+        if (url.includes(downloadSetting.PageAddress)) {
             console.log("Hsd url");
 
-            let regex = new RegExp(downloadSettings.SaveDirRegexp);
+            let regex = new RegExp(downloadSetting.SaveDirRegexp);
             let m = url.match(regex);
 
             if (m != null) {
                 let filePath = `${m[0]}\\${downloadItem.filename}`;
                 
                 // Tests undefined, null or empty. If sub dir is not empty then append to path.
-                if (downloadSettings.DownloadSubDirectory)
+                if (downloadSetting.DownloadSubDirectory)
                 {
-                    filePath = `${downloadSettings.DownloadSubDirectory}\\${filePath}`
+                    filePath = `${downloadSetting.DownloadSubDirectory}\\${filePath}`
                 }
 
                 console.log(`Saving as: ${filePath}`);

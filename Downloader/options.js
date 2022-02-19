@@ -5,10 +5,42 @@ saveButton.addEventListener("click", handleSaveButtonClick);
 addButton.addEventListener("click", handleAddButtonClick);
 
 function handleSaveButtonClick() {
-    let downloadEntry = new DownloadEntry(address.value, regexp.value, subdir.value);
-    console.log(`To be saved: ${address.value} ::: ${regexp.value} ::: ${subdir.value}`);
-    console.log(`Download entry: PageAddress: ${downloadEntry.PageAddress} ::: SaveRegexp: ${downloadEntry.SaveDirRegexp} ::: SubDir: ${downloadEntry.DownloadSubDirectory}`);
-    chrome.storage.sync.set({ "downloadSettings": downloadEntry });
+    let downloadEntriesDivs = document.getElementById("DownloadEntriesDiv").getElementsByTagName("div");
+    let downloadEntries = [];
+
+    if (downloadEntriesDivs) {
+        for (var i = 0; i < downloadEntriesDivs.length; i++) {
+            let textBoxes = downloadEntriesDivs[i].getElementsByTagName("text");
+            if (textBoxes) {
+                let downloadEntry = new DownloadEntry("", "", "");
+
+                for (var j = 0; j < textBoxes.length; j++) {
+                    if (textBoxes[i].id.includes("address")) {
+                        downloadEntry.PageAddress = textBoxes[i].value;
+                    }
+                    else if (textBoxes[i].id.includes("subdir")) {
+                        downloadEntry.DownloadSubDirectory = textBoxes[i].value;
+                    }
+                    else if (textBoxes[i].id.includes("regexp")) {
+                        downloadEntry.SaveDirRegexp = textBoxes[i].value;
+                    }
+                    else {
+                        console.log(`Found unexpected textbox ${textBoxes[i].id}`);
+                    }
+                }
+
+                if (!downloadEntry.address || (!downloadEntry.subdir && !downloadEntry.regexp)) {
+                    console.log(`Invalid download entry specified: ${downloadEntry}`);
+                }
+                else {
+                    downloadEntries[downloadEntries.length] = downloadEntry;
+                    console.log(`Download entry: PageAddress: ${downloadEntry.PageAddress} ::: SaveRegexp: ${downloadEntry.SaveDirRegexp} ::: SubDir: ${downloadEntry.DownloadSubDirectory}`);
+                }
+            }
+        }
+    }
+
+    chrome.storage.sync.set({ "downloadSettings": downloadEntries });
 }
 
 function handleAddButtonClick() {
