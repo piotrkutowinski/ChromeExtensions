@@ -7,6 +7,7 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     });
     
     console.log('Page address pattern is ' + downloadSettings.PageAddress);
+    console.log('Save subdirectory is ' + downloadSettings.DownloadSubDirectory);
     console.log('Save directory regexp is ' + downloadSettings.SaveDirRegexp);
 
     console.log(`Downloading file: ${downloadItem.filename}`);
@@ -22,6 +23,13 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
 
             if (m != null) {
                 let fileName = `${m[0]}\\${downloadItem.filename}`;
+                
+                // Tests undefined, null or empty. If sub dir is not empty then append to path.
+                if (downloadSettings.DownloadSubDirectory)
+                {
+                    fileName = `${downloadSettings.DownloadSubDirectory}\\${fileName}`
+                }
+
                 console.log(`Saving as: ${fileName}`);
 
                 suggest({ filename: `${fileName}` });
