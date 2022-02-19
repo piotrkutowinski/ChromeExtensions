@@ -29,7 +29,7 @@ function handleSaveButtonClick() {
                     }
                 }
 
-                if (!downloadEntry.address || (!downloadEntry.subdir && !downloadEntry.regexp)) {
+                if (!downloadEntry.PageAddress || (!downloadEntry.DownloadSubDirectory && !downloadEntry.SaveDirRegexp)) {
                     console.log(`Invalid download entry specified: ${downloadEntry}`);
                 }
                 else {
