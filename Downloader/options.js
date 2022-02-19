@@ -2,13 +2,14 @@ let saveButton = document.getElementById("saveButton");
 let addButton = document.getElementById("addOptionButton")
 let address = document.getElementById("addressTextBox");
 let regexp = document.getElementById("regexpTextBox");
+let subdir = document.getElementById("subdirTextBox");
 
 saveButton.addEventListener("click", handleSaveButtonClick);
 addButton.addEventListener("click", handleAddButtonClick);
 
 function handleSaveButtonClick() {
-    let downloadEntry = new DownloadEntry(address.value, regexp.value, "");
-    console.log(`To be saved: ${address.value} ::: ${regexp.value}`);
+    let downloadEntry = new DownloadEntry(address.value, regexp.value, subdir.value);
+    console.log(`To be saved: ${address.value} ::: ${regexp.value} ::: ${subdir.value}`);
     console.log(`Download entry: PageAddress: ${downloadEntry.PageAddress} ::: SaveRegexp: ${downloadEntry.SaveDirRegexp} ::: SubDir: ${downloadEntry.DownloadSubDirectory}`);
     chrome.storage.sync.set({ "downloadSettings": downloadEntry });
 }
@@ -37,6 +38,8 @@ async function drawOptions(options) {
     optionsDiv.id = `optionDiv${now}`;
     optionsDiv.innerHTML = `<text>Page address: </text>
         <input type="text" size="40" maxlength="40" id="addressTextBox${now}">
+        <text>Save subdirectory: </text>
+        <input type="text" size="40" maxlength="40" id="subdirTextBox${now}">
         <text> Save dir regexp: </text>
         <input type="text" size="40" maxlength="40" id="regexpTextBox${now}"> 
         <button id="saveButton">save</button> <button id="removeButton${now}">remove</button>`;
@@ -44,6 +47,7 @@ async function drawOptions(options) {
     masterDiv.appendChild(optionsDiv);
 
     document.getElementById(`addressTextBox${now}`).value = options.PageAddress;
+    document.getElementById(`subdirTextBox${now}`).value = options.DownloadSubDirectory;
     document.getElementById(`regexpTextBox${now}`).value = options.SaveDirRegexp;
     let remButton = document.getElementById(`removeButton${now}`);
     remButton.addEventListener("click", handleRemoveButtonClick, false);
