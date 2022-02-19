@@ -1,10 +1,12 @@
 class DownloadEntry {
     PageAddress = "";
     SaveDirRegexp = "";
+    DownloadSubDirectory = "";
 
-    constructor(address, regexp) {
-        this.PageAddress = address;
-        this.SaveDirRegexp = regexp;
+    constructor(_address, _regexp, _downloadSubDirectory) {
+        this.PageAddress = _address;
+        this.SaveDirRegexp = _regexp;
+        this.DownloadSubDirectory = _downloadSubDirectory;
     }
 
     Address() {

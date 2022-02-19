@@ -7,14 +7,14 @@ saveButton.addEventListener("click", handleSaveButtonClick);
 addButton.addEventListener("click", handleAddButtonClick);
 
 function handleSaveButtonClick() {
-    let downloadEntry = new DownloadEntry(address.value, regexp.value);
+    let downloadEntry = new DownloadEntry(address.value, regexp.value, "");
     console.log(`To be saved: ${address.value} ::: ${regexp.value}`);
-    console.log(`Download entry: ${downloadEntry.PageAddress} ::: ${downloadEntry.SaveDirRegexp}`);
+    console.log(`Download entry: PageAddress: ${downloadEntry.PageAddress} ::: SaveRegexp: ${downloadEntry.SaveDirRegexp} ::: SubDir: ${downloadEntry.DownloadSubDirectory}`);
     chrome.storage.sync.set({ "downloadSettings": downloadEntry });
 }
 
 function handleAddButtonClick() {
-    let blankOption = new DownloadEntry("", "");
+    let blankOption = new DownloadEntry("", "", "");
 
     drawOptions(blankOption);
 }
