@@ -22,17 +22,17 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
             let m = url.match(regex);
 
             if (m != null) {
-                let fileName = `${m[0]}\\${downloadItem.filename}`;
+                let filePath = `${m[0]}\\${downloadItem.filename}`;
                 
                 // Tests undefined, null or empty. If sub dir is not empty then append to path.
                 if (downloadSettings.DownloadSubDirectory)
                 {
-                    fileName = `${downloadSettings.DownloadSubDirectory}\\${fileName}`
+                    filePath = `${downloadSettings.DownloadSubDirectory}\\${filePath}`
                 }
 
-                console.log(`Saving as: ${fileName}`);
+                console.log(`Saving as: ${filePath}`);
 
-                suggest({ filename: `${fileName}` });
+                suggest({ filename: `${filePath}` });
             }
         }
     });
