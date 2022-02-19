@@ -4,6 +4,8 @@ let addButton = document.getElementById("addOptionButton")
 saveButton.addEventListener("click", handleSaveButtonClick);
 addButton.addEventListener("click", handleAddButtonClick);
 
+let optCount = 0;
+
 function handleSaveButtonClick() {
     let downloadEntriesDivs = document.getElementById("DownloadEntriesDiv").getElementsByTagName("div");
     let downloadEntries = [];
@@ -48,7 +50,7 @@ function handleSaveButtonClick() {
 function handleAddButtonClick() {
     let blankOption = new DownloadEntry("", "", "");
 
-    drawOptions(blankOption);
+    drawOptions(blankOption, optCount++);
 }
 
 function handleRemoveButtonClick(evt) {
@@ -60,40 +62,37 @@ function handleRemoveButtonClick(evt) {
     optionsDiv.removeChild(optionDiv);
 }
 
-async function drawOptions(options) {
-
-    let now = Date.now();
+async function drawOptions(_options, _id) {
     let masterDiv = document.getElementById("DownloadEntriesDiv");
 
     let downloadEntriesDiv = document.createElement(`div`);
-    downloadEntriesDiv.id = `optionDiv${now}`;
+    downloadEntriesDiv.id = `optionDiv${_id}`;
     downloadEntriesDiv.innerHTML = `<text>Page address: </text>
-        <input type="text" size="40" maxlength="40" id="addressTextBox${now}">
+        <input type="text" size="40" maxlength="40" id="addressTextBox${_id}">
         <text>Save subdirectory: </text>
-        <input type="text" size="40" maxlength="40" id="subdirTextBox${now}">
+        <input type="text" size="40" maxlength="40" id="subdirTextBox${_id}">
         <text> Save dir regexp: </text>
-        <input type="text" size="40" maxlength="40" id="regexpTextBox${now}"> 
-        <button id="saveButton">save</button> <button id="removeButton${now}">remove</button>`;
+        <input type="text" size="40" maxlength="40" id="regexpTextBox${_id}"> 
+        <button id="saveButton">save</button> <button id="removeButton${_id}">remove</button>`;
 
     masterDiv.appendChild(downloadEntriesDiv);
 
-    document.getElementById(`addressTextBox${now}`).value = options.PageAddress;
-    document.getElementById(`subdirTextBox${now}`).value = options.DownloadSubDirectory;
-    document.getElementById(`regexpTextBox${now}`).value = options.SaveDirRegexp;
-    let remButton = document.getElementById(`removeButton${now}`);
+    document.getElementById(`addressTextBox${_id}`).value = _options.PageAddress;
+    document.getElementById(`subdirTextBox${_id}`).value = _options.DownloadSubDirectory;
+    document.getElementById(`regexpTextBox${_id}`).value = _options.SaveDirRegexp;
+    let remButton = document.getElementById(`removeButton${_id}`);
     remButton.addEventListener("click", handleRemoveButtonClick, false);
-    remButton.uniqueId = now;
+    remButton.uniqueId = _id;
 }
 
 async function Initialize() {
     let downloadSettings = await loadStoredDownloadSettings();
+    downloadSettings = Object.values(downloadSettings);
 
-    if (Array.isArray(downloadSettings)) {
+    if (downloadSettings && downloadSettings.length > 0) {
         downloadSettings.forEach(setting => {
-            drawOptions(setting);
+            drawOptions(setting, optCount++);
         });
-    } else if (downloadSettings) {
-        drawOptions(downloadSettings);
     }
     else {
         drawOptions(new DownloadEntry("", "", ""));
