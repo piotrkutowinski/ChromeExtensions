@@ -10,22 +10,22 @@ function handleSaveButtonClick() {
 
     if (downloadEntriesDivs) {
         for (var i = 0; i < downloadEntriesDivs.length; i++) {
-            let textBoxes = downloadEntriesDivs[i].getElementsByTagName("text");
-            if (textBoxes) {
+            let inputBoxes = downloadEntriesDivs[i].getElementsByTagName("input");
+            if (inputBoxes) {
                 let downloadEntry = new DownloadEntry("", "", "");
 
-                for (var j = 0; j < textBoxes.length; j++) {
-                    if (textBoxes[i].id.includes("address")) {
-                        downloadEntry.PageAddress = textBoxes[i].value;
+                for (var j = 0; j < inputBoxes.length; j++) {
+                    if (inputBoxes[j].id.includes("address")) {
+                        downloadEntry.PageAddress = inputBoxes[j].value;
                     }
-                    else if (textBoxes[i].id.includes("subdir")) {
-                        downloadEntry.DownloadSubDirectory = textBoxes[i].value;
+                    else if (inputBoxes[j].id.includes("subdir")) {
+                        downloadEntry.DownloadSubDirectory = inputBoxes[j].value;
                     }
-                    else if (textBoxes[i].id.includes("regexp")) {
-                        downloadEntry.SaveDirRegexp = textBoxes[i].value;
+                    else if (inputBoxes[j].id.includes("regexp")) {
+                        downloadEntry.SaveDirRegexp = inputBoxes[j].value;
                     }
                     else {
-                        console.log(`Found unexpected textbox ${textBoxes[i].id}`);
+                        console.log(`Found unexpected textbox ${inputBoxes[j].id}`);
                     }
                 }
 
