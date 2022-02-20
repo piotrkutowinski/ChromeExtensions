@@ -57,25 +57,25 @@ function handleRemoveButtonClick(evt) {
     console.log(`Remove button click: ${evt.currentTarget.id}`);
     console.log(`Remove button click: ${evt.currentTarget.uniqueId}`);
 
-    let optionsDiv = document.getElementById(`DownloadEntriesDiv`);
-    let optionDiv = document.getElementById(`optionDiv${evt.currentTarget.uniqueId}`);
-    optionsDiv.removeChild(optionDiv);
+    let downloadEntriesDiv = document.getElementById(`DownloadEntriesDiv`);
+    let downloadEntryDiv = document.getElementById(`downloadEntryDiv${evt.currentTarget.uniqueId}`);
+    downloadEntriesDiv.removeChild(downloadEntryDiv);
 }
 
 async function drawOptions(_options, _id) {
     let masterDiv = document.getElementById("DownloadEntriesDiv");
 
-    let downloadEntriesDiv = document.createElement(`div`);
-    downloadEntriesDiv.id = `optionDiv${_id}`;
-    downloadEntriesDiv.innerHTML = `<text>Page address: </text>
+    let downloadEntryDiv = document.createElement(`div`);
+    downloadEntryDiv.id = `downloadEntryDiv${_id}`;
+    downloadEntryDiv.innerHTML = `<text>Page address: </text>
         <input type="text" size="40" maxlength="40" id="addressTextBox${_id}">
         <text>Save subdirectory: </text>
         <input type="text" size="40" maxlength="40" id="subdirTextBox${_id}">
         <text> Save dir regexp: </text>
         <input type="text" size="40" maxlength="40" id="regexpTextBox${_id}"> 
-        <button id="saveButton">save</button> <button id="removeButton${_id}">remove</button>`;
+        <button id="removeButton${_id}">remove</button>`;
 
-    masterDiv.appendChild(downloadEntriesDiv);
+    masterDiv.appendChild(downloadEntryDiv);
 
     document.getElementById(`addressTextBox${_id}`).value = _options.PageAddress;
     document.getElementById(`subdirTextBox${_id}`).value = _options.DownloadSubDirectory;
