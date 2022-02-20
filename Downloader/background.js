@@ -1,44 +1,52 @@
-const downloadSettingsp = loadStoredDownloadSettings();
+let downloadSettings = {};
 
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
-    let downloadSettings = {};
-    downloadSettingsp.then((d)=>{
-        Object.assign(downloadSettings, d);
-    });
-    
-    console.log('Page address pattern is ' + downloadSettings.PageAddress);
-    console.log('Save subdirectory is ' + downloadSettings.DownloadSubDirectory);
-    console.log('Save directory regexp is ' + downloadSettings.SaveDirRegexp);
-
     console.log(`Downloading file: ${downloadItem.filename}`);
+    console.log(`Download settings: ${downloadSettings}`);
 
     getCurrentTabUrl().then((url) => {
         console.log(`Tab url: "${url}"`);
 
-        if (url.includes(downloadSettings.PageAddress)) {
-            console.log("Hsd url");
-
-            let regex = new RegExp(downloadSettings.SaveDirRegexp);
-            let m = url.match(regex);
-
-            if (m != null) {
-                let filePath = `${m[0]}\\${downloadItem.filename}`;
-                
-                // Tests undefined, null or empty. If sub dir is not empty then append to path.
-                if (downloadSettings.DownloadSubDirectory)
-                {
-                    filePath = `${downloadSettings.DownloadSubDirectory}\\${filePath}`
-                }
-
-                console.log(`Saving as: ${filePath}`);
-
-                suggest({ filename: `${filePath}` });
+        let downloadSetting = {};
+        for (var i = 0; i < downloadSettings.length; i++) {
+            if (url.includes(downloadSettings[i].PageAddress)) {
+                downloadSetting = downloadSettings[i];
+                break;
             }
         }
+
+        console.log('Page address pattern is ' + downloadSetting.PageAddress);
+        console.log('Save subdirectory is ' + downloadSetting.DownloadSubDirectory);
+        console.log('Save directory regexp is ' + downloadSetting.SaveDirRegexp);
+
+        let filePath = updateFilePath(downloadItem.filename, url, downloadSetting);
+
+        console.log(`Saving as: ${filePath}`);
+        suggest({ filename: `${filePath}` });
     });
 
     return true;
 });
+
+function updateFilePath(_fileName, _url, _downloadSettings) {
+    let regex = new RegExp(_downloadSettings.SaveDirRegexp);
+    let m = _url.match(regex);
+
+    let filePath = "";
+    if (m != null && m.length > 0) {
+        filePath = `${m[0]}\\${_fileName}`;
+
+        // Tests undefined, null or empty. If sub dir is not empty then append to path.
+        if (_downloadSettings.DownloadSubDirectory) {
+            filePath = `${_downloadSettings.DownloadSubDirectory}\\${filePath}`
+        }
+    }
+    else {
+        filePath = _fileName
+    }
+
+    return filePath;
+}
 
 async function getCurrentTabUrl() {
     let queryOptions = { active: true, currentWindow: true };
@@ -48,14 +56,13 @@ async function getCurrentTabUrl() {
 }
 
 async function loadStoredDownloadSettings() {
-    let opt = {};
-
     await getLocalStorageValue("downloadSettings").then((options) => {
-        Object.assign(opt, options.downloadSettings);
+        // awkward conver object to array.
+        downloadSettings =  Object.values(options.downloadSettings);
+        console.log(`Download settings loaded.`);
     });
 
-    console.log(opt);
-    return opt
+    console.log(downloadSettings);
 }
 
 async function getLocalStorageValue(key) {
@@ -70,3 +77,5 @@ async function getLocalStorageValue(key) {
         }
     });
 }
+
+loadStoredDownloadSettings();
