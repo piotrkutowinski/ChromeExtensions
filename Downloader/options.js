@@ -58,7 +58,7 @@ function handleRemoveButtonClick(evt) {
     console.log(`Remove button click: ${evt.currentTarget.uniqueId}`);
 
     let optionsDiv = document.getElementById(`DownloadEntriesDiv`);
-    let optionDiv = document.getElementById(`optionDiv${evt.currentTarget.uniqueId}}`);
+    let optionDiv = document.getElementById(`optionDiv${evt.currentTarget.uniqueId}`);
     optionsDiv.removeChild(optionDiv);
 }
 
