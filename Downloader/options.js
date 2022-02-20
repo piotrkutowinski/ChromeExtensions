@@ -1,68 +1,101 @@
 let saveButton = document.getElementById("saveButton");
 let addButton = document.getElementById("addOptionButton")
-let address = document.getElementById("addressTextBox");
-let regexp = document.getElementById("regexpTextBox");
-let subdir = document.getElementById("subdirTextBox");
 
 saveButton.addEventListener("click", handleSaveButtonClick);
 addButton.addEventListener("click", handleAddButtonClick);
 
+let optCount = 0;
+
 function handleSaveButtonClick() {
-    let downloadEntry = new DownloadEntry(address.value, regexp.value, subdir.value);
-    console.log(`To be saved: ${address.value} ::: ${regexp.value} ::: ${subdir.value}`);
-    console.log(`Download entry: PageAddress: ${downloadEntry.PageAddress} ::: SaveRegexp: ${downloadEntry.SaveDirRegexp} ::: SubDir: ${downloadEntry.DownloadSubDirectory}`);
-    chrome.storage.sync.set({ "downloadSettings": downloadEntry });
+    let downloadEntriesDivs = document.getElementById("DownloadEntriesDiv").getElementsByTagName("div");
+    let downloadEntries = [];
+
+    if (downloadEntriesDivs) {
+        for (var i = 0; i < downloadEntriesDivs.length; i++) {
+            let inputBoxes = downloadEntriesDivs[i].getElementsByTagName("input");
+            if (inputBoxes) {
+                let downloadEntry = new DownloadEntry("", "", "");
+
+                for (var j = 0; j < inputBoxes.length; j++) {
+                    if (inputBoxes[j].id.includes("address")) {
+                        downloadEntry.PageAddress = inputBoxes[j].value;
+                    }
+                    else if (inputBoxes[j].id.includes("subdir")) {
+                        downloadEntry.DownloadSubDirectory = inputBoxes[j].value;
+                    }
+                    else if (inputBoxes[j].id.includes("regexp")) {
+                        downloadEntry.SaveDirRegexp = inputBoxes[j].value;
+                    }
+                    else {
+                        console.log(`Found unexpected textbox ${inputBoxes[j].id}`);
+                    }
+                }
+
+                if (!downloadEntry.PageAddress || (!downloadEntry.DownloadSubDirectory && !downloadEntry.SaveDirRegexp)) {
+                    console.log(`Invalid download entry specified: ${downloadEntry}`);
+                }
+                else {
+                    downloadEntries[downloadEntries.length] = downloadEntry;
+                    console.log(`Download entry: PageAddress: ${downloadEntry.PageAddress} ::: SaveRegexp: ${downloadEntry.SaveDirRegexp} ::: SubDir: ${downloadEntry.DownloadSubDirectory}`);
+                }
+            }
+        }
+    }
+
+    if (downloadEntries.length > 0) {
+        chrome.storage.sync.set({ "downloadSettings": downloadEntries });
+    }
 }
 
 function handleAddButtonClick() {
     let blankOption = new DownloadEntry("", "", "");
 
-    drawOptions(blankOption);
+    drawOptions(blankOption, optCount++);
 }
 
 function handleRemoveButtonClick(evt) {
     console.log(`Remove button click: ${evt.currentTarget.id}`);
     console.log(`Remove button click: ${evt.currentTarget.uniqueId}`);
 
-    let optionsDiv = document.getElementById(`OptionsDiv`);
+    let optionsDiv = document.getElementById(`DownloadEntriesDiv`);
     let optionDiv = document.getElementById(`optionDiv${evt.currentTarget.uniqueId}}`);
     optionsDiv.removeChild(optionDiv);
 }
 
-async function drawOptions(options) {
-    let masterDiv = document.getElementById("OptionsDiv");
+async function drawOptions(_options, _id) {
+    let masterDiv = document.getElementById("DownloadEntriesDiv");
 
-    let now = Date.now();
-
-    let optionsDiv = document.createElement(`div`);
-    optionsDiv.id = `optionDiv${now}`;
-    optionsDiv.innerHTML = `<text>Page address: </text>
-        <input type="text" size="40" maxlength="40" id="addressTextBox${now}">
+    let downloadEntriesDiv = document.createElement(`div`);
+    downloadEntriesDiv.id = `optionDiv${_id}`;
+    downloadEntriesDiv.innerHTML = `<text>Page address: </text>
+        <input type="text" size="40" maxlength="40" id="addressTextBox${_id}">
         <text>Save subdirectory: </text>
-        <input type="text" size="40" maxlength="40" id="subdirTextBox${now}">
+        <input type="text" size="40" maxlength="40" id="subdirTextBox${_id}">
         <text> Save dir regexp: </text>
-        <input type="text" size="40" maxlength="40" id="regexpTextBox${now}"> 
-        <button id="saveButton">save</button> <button id="removeButton${now}">remove</button>`;
+        <input type="text" size="40" maxlength="40" id="regexpTextBox${_id}"> 
+        <button id="saveButton">save</button> <button id="removeButton${_id}">remove</button>`;
 
-    masterDiv.appendChild(optionsDiv);
+    masterDiv.appendChild(downloadEntriesDiv);
 
-    document.getElementById(`addressTextBox${now}`).value = options.PageAddress;
-    document.getElementById(`subdirTextBox${now}`).value = options.DownloadSubDirectory;
-    document.getElementById(`regexpTextBox${now}`).value = options.SaveDirRegexp;
-    let remButton = document.getElementById(`removeButton${now}`);
+    document.getElementById(`addressTextBox${_id}`).value = _options.PageAddress;
+    document.getElementById(`subdirTextBox${_id}`).value = _options.DownloadSubDirectory;
+    document.getElementById(`regexpTextBox${_id}`).value = _options.SaveDirRegexp;
+    let remButton = document.getElementById(`removeButton${_id}`);
     remButton.addEventListener("click", handleRemoveButtonClick, false);
-    remButton.uniqueId = now;
+    remButton.uniqueId = _id;
 }
 
 async function Initialize() {
     let downloadSettings = await loadStoredDownloadSettings();
+    downloadSettings = Object.values(downloadSettings);
 
-    if (Array.isArray(downloadSettings)) {
+    if (downloadSettings && downloadSettings.length > 0) {
         downloadSettings.forEach(setting => {
-            drawOptions(setting);
+            drawOptions(setting, optCount++);
         });
-    } else {
-        drawOptions(downloadSettings)
+    }
+    else {
+        drawOptions(new DownloadEntry("", "", ""));
     }
 }
 
